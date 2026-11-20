@@ -3,12 +3,13 @@
         <meta charset="UTF-8">
         <title>Upload de Múltiplas Imagens</title>
         <style>.warning { color: red; font-weight: bold; }</style>
-    </head>
+        <link rel="stylesheet" href="styles.css">
+    </head>,.
     <body>
         <form action="upload.php" method="post" enctype="multipart/form-data" id="uploadForm">
             Selecione as imagens para upload:
-            <input type="file" name="fileToUpload[]" id="fileToUpload" multiple>
-            <input type="submit" value="Upload Images" name="submit">
+            <input type="file" name="fileToUpload[]" id="fileToUpload" class="meu-file" multiple>
+            <input type="submit" value="Upload Images" name="submit" class="botão-padrão">
         </form>
         <div id="status" class="warning"></div>
 
@@ -17,7 +18,7 @@
                 const files = document.getElementById('fileToUpload').files;
                 const status = document.getElementById('status');
                 status.innerHTML = '';
-
+                
                 if (files.length > 500) {
                     e.preventDefault();
                     status.innerHTML = 'Erro: Máximo de 500 arquivos permitido.';
@@ -37,5 +38,10 @@
                 }
             });
         </script>
+        
+        <h1>Faça parte do acervo mais completo do Brasil de Hytale</h1>
+        <h2>amazerne todas suas fotos do hytale aqui!</h2>
+        <button href="galeria.php" class="botão-padrão">Minha galeria</button>
+        <button href="" class="botão-padrão">Galeria geral</button>
     </body>
 </html>
