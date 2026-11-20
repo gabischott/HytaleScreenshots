@@ -3,17 +3,33 @@ $target_dir = "uploads/";
 $uploadOk = 1;
 
 // Verifica se o formulário foi enviado
-if(isset($_POST["submit"])) {
+if (isset($_POST["submit"])) {
     
     // Conta quantos arquivos foram enviados
     $totalFiles = count($_FILES['fileToUpload']['name']);
 
+    // Verificação de Limite de Quantidade
+    if ($totalFiles > 500) {
+        die("Erro: Você tentou enviar $totalFiles arquivos. O limite é 500.");
+    }
+
+    // Verificação de Performance: Aviso se o lote total for muito grande
+    $totalSize = array_sum($_FILES['fileToUpload']['size']);
+    if ($totalSize > 100 * 1024 * 1024) { // 100MB
+        echo "<p style='color:orange;'>Aviso: O processamento de um volume tão grande de dados pode levar algum tempo.</p>";
+    }
+
     // Loop através de cada arquivo
-    for($i = 0; $i < $totalFiles; $i++) {
+    for ($i = 0; $i < $totalFiles; $i++) {
         
         $fileName = $_FILES["fileToUpload"]["name"][$i];
         
-        if(empty($fileName)) {
+        if (empty($fileName)) {
+            continue;
+        }
+
+        if ($_FILES['fileToUpload']['error'][$i] !== UPLOAD_ERR_OK) {
+            echo "<br>Desculpe, o arquivo <strong>" . htmlspecialchars($fileName) . "</strong> falhou no envio (Código de erro do PHP: " . $_FILES['fileToUpload']['error'][$i] . ").";
             continue;
         }
 
@@ -42,7 +58,7 @@ if(isset($_POST["submit"])) {
 
         // 1. Verifica se é uma imagem real
         $check = getimagesize($_FILES["fileToUpload"]["tmp_name"][$i]);
-        if($check !== false) {
+        if ($check !== false) {
             echo "<br>Arquivo <strong>" . htmlspecialchars($fileName) . "</strong> é uma imagem - " . $check["mime"] . ".";
         } else {
             echo "<br>Arquivo <strong>" . htmlspecialchars($fileName) . "</strong> não é uma imagem.";
@@ -55,15 +71,16 @@ if(isset($_POST["submit"])) {
             $currentUploadOk = 0;
         }
 
-        // 3. Verifica o tamanho do arquivo (limite de por exemplo)
-        if ($_FILES["fileToUpload"]["size"][$i] > 50000) {
+        // 3. Verifica o tamanho individual do arquivo (limite de 5MB)
+        // Caso queira seguir os 500MB configurados no PHP, altere o valor abaixo para 500000000
+        if ($_FILES["fileToUpload"]["size"][$i] > 5000000) {
             echo "<br>Desculpe, o arquivo <strong>" . htmlspecialchars($fileName) . "</strong> é muito grande.";
             $currentUploadOk = 0;
         }
 
         // 4. Permite apenas determinados formatos
-        if($imageFileType != "png") {
-            echo "<br>Desculpe, apenas arquivos JPG, JPEG, PNG e GIF são permitidos para <strong>" . htmlspecialchars($fileName) . "</strong>.";
+        if ($imageFileType != "png") {
+            echo "<br>Desculpe, apenas arquivos PNG são permitidos para <strong>" . htmlspecialchars($fileName) . "</strong>.";
             $currentUploadOk = 0;
         }
 
